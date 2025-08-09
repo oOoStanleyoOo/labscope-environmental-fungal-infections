@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fungi Result</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-5 text-center">
+    <h1>🔍 Identification Result</h1>
+    <p>Score: {{ result.score }}</p>
+
+    <div class="row justify-content-center my-4">
+        <div class="col-md-4">
+            <h5>Your Image</h5>
+            <img src="/uploads/{{ uploaded_image }}" class="img-fluid border">
+        </div>
+        {% if result.matched %}
+        <div class="col-md-4">
+            <h5>Closest Match: {{ result.match_name }}</h5>
+            <img src="{{ result.match_image }}" class="img-fluid border">
+        </div>
+        {% endif %}
+    </div>
+
+    {% if result.matched %}
+        <h3>Description:</h3>
+        <p>{{ result.description }}</p>
+    {% else %}
+        <h3>No suitable match found.</h3>
+        <p>Try a clearer or closer photo.</p>
+    {% endif %}
+
+    <a href="/" class="btn btn-secondary mt-3">Try Another</a>
+</body>
+</html>
