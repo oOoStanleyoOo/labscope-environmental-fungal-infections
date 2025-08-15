@@ -1,32 +1,130 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fungi Identifier</title>
+    <title>🌿 Fungi Identifier</title>
+    <style>
+        body {
+            background-color: #e0f7fa;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #00695c;
+            font-size: 32px;
+            padding: 20px;
+        }
+
+        .button {
+            background-color: #004d40;
+            color: black;
+            font-size: 16px;
+            font-family: 'Comic Sans MS', cursive;
+            border: 3px solid #004d40;
+            padding: 12px 24px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 250px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            padding: 30px;
+        }
+
+        .frame {
+            background-color: #e0f7fa;
+            border: 2px dashed #00695c;
+            padding: 10px;
+            width: 300px;
+            min-height: 300px;
+        }
+
+        .desc-box {
+            width: 90%;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border: 2px solid #004d40;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            color: #004d40;
+            font-size: 14px;
+            height: 200px;
+            overflow-y: auto;
+        }
+
+        video, canvas {
+            display: block;
+            margin: 0 auto;
+            border: 2px solid #004d40;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Upload or Capture an Image</h1>
 
-    <!-- Upload form -->
+    <h1>Fungi Identification System</h1>
+
+    <!-- Upload Image Form -->
     <form method="POST" action="/identify" enctype="multipart/form-data">
-        <input type="file" name="image" accept="image/*">
-        <button type="submit">Upload Image</button>
+        <input type="file" name="image" accept="image/*" required>
+        <br>
+        <button class="button" type="submit">📁 Upload Image</button>
     </form>
 
-    <hr>
+    <!-- Take Photo -->
+    <button class="button" id="snap">📸 Take Photo</button>
+    <video id="video" width="300" height="225" autoplay></video>
+    <canvas id="canvas" width="300" height="225" style="display:none;"></canvas>
 
-    <!-- Webcam capture -->
-    <h2>Take a Photo</h2>
-    <video id="video" width="320" height="240" autoplay></video>
-    <br>
-    <button id="snap">📸 Take Photo</button>
-    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-
+    <!-- Hidden Camera Form -->
     <form id="cameraForm" method="POST" action="/identify" enctype="multipart/form-data" style="display:none;">
-        <input type="hidden" name="from_camera" value="true">
         <input type="file" id="hiddenFile" name="image">
     </form>
+
+    <!-- Add New Fungi -->
+    <form action="/add">
+        <button class="button" type="submit">➕ Add New Fungi to Database</button>
+    </form>
+
+    <!-- Result -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <p style="color: red; font-weight: bold;">{{ messages[0] }}</p>
+        {% endif %}
+    {% endwith %}
+
+    {% if match_name %}
+        <h2 style="color: green;">✅ Match: {{ match_name }} (Score: {{ match_score }})</h2>
+    {% endif %}
+
+    <div class="container">
+        <div class="frame">
+            {% if user_image %}
+                <img src="{{ user_image }}" width="300"><br>
+                <p>Your Image</p>
+            {% endif %}
+        </div>
+
+        <div class="frame">
+            {% if match_image %}
+                <img src="{{ match_image }}" width="300"><br>
+                <p>{{ match_name }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if description %}
+        <div class="desc-box">
+            {{ description }}
+        </div>
+    {% endif %}
 
     <script>
         const video = document.getElementById('video');
@@ -35,16 +133,16 @@
         const hiddenFile = document.getElementById('hiddenFile');
         const cameraForm = document.getElementById('cameraForm');
 
-        // Start camera
+        // Start camera stream
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 video.srcObject = stream;
             })
             .catch(err => {
-                alert("Cannot access webcam: " + err);
+                alert("Webcam access denied or unavailable.");
             });
 
-        // Take photo and send to Flask
+        // Take photo
         snap.addEventListener("click", function () {
             canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
             canvas.toBlob(blob => {
@@ -56,5 +154,7 @@
             }, 'image/jpeg');
         });
     </script>
+
 </body>
 </html>
+
