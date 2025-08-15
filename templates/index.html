@@ -1,160 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>🌿 Fungi Identifier</title>
-    <style>
-        body {
-            background-color: #e0f7fa;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <title>🌿 Fungi Identifier</title>
+  <style>
+    body {
+      background-color: #e0f7fa;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+    }
 
-        h1 {
-            color: #00695c;
-            font-size: 32px;
-            padding: 20px;
-        }
+    h1 {
+      color: #00695c;
+      padding: 20px;
+      font-size: 32px;
+    }
 
-        .button {
-            background-color: #004d40;
-            color: black;
-            font-size: 16px;
-            font-family: 'Comic Sans MS', cursive;
-            border: 3px solid #004d40;
-            padding: 12px 24px;
-            margin: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 250px;
-        }
+    .btn {
+      background-color: #004d40;
+      color: black;
+      font-size: 16px;
+      border: 3px solid #004d40;
+      border-radius: 5px;
+      padding: 12px 24px;
+      cursor: pointer;
+      font-family: 'Comic Sans MS', cursive;
+      margin: 10px;
+    }
 
-        .container {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            padding: 30px;
-        }
+    .upload-btn-wrapper {
+      position: relative;
+      display: inline-block;
+    }
 
-        .frame {
-            background-color: #e0f7fa;
-            border: 2px dashed #00695c;
-            padding: 10px;
-            width: 300px;
-            min-height: 300px;
-        }
+    .upload-btn-wrapper input[type=file] {
+      font-size: 100px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
 
-        .desc-box {
-            width: 90%;
-            margin: 30px auto;
-            background-color: #ffffff;
-            border: 2px solid #004d40;
-            padding: 15px;
-            font-family: Arial, sans-serif;
-            color: #004d40;
-            font-size: 14px;
-            height: 200px;
-            overflow-y: auto;
-        }
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 40px 0;
+      flex-wrap: wrap;
+    }
 
-        video, canvas {
-            display: block;
-            margin: 0 auto;
-            border: 2px solid #004d40;
-            margin-top: 10px;
-        }
-    </style>
+    .frame {
+      background-color: #e0f7fa;
+      border: 2px dashed #00695c;
+      width: 300px;
+      min-height: 300px;
+      padding: 10px;
+    }
+
+    .desc-box {
+      width: 90%;
+      margin: 30px auto;
+      background-color: #ffffff;
+      border: 2px solid #004d40;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+      color: #004d40;
+      font-size: 14px;
+      height: 180px;
+      overflow-y: auto;
+    }
+
+    video, canvas {
+      margin-top: 15px;
+      border: 2px solid #004d40;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Fungi Identification System</h1>
+  <h1>Fungi Identification System</h1>
 
-    <!-- Upload Image Form -->
-    <form method="POST" action="/identify" enctype="multipart/form-data">
-        <input type="file" name="image" accept="image/*" required>
-        <br>
-        <button class="button" type="submit">📁 Upload Image</button>
-    </form>
-
-    <!-- Take Photo -->
-    <button class="button" id="snap">📸 Take Photo</button>
-    <video id="video" width="300" height="225" autoplay></video>
-    <canvas id="canvas" width="300" height="225" style="display:none;"></canvas>
-
-    <!-- Hidden Camera Form -->
-    <form id="cameraForm" method="POST" action="/identify" enctype="multipart/form-data" style="display:none;">
-        <input type="file" id="hiddenFile" name="image">
-    </form>
-
-    <!-- Add New Fungi -->
-    <form action="/add">
-        <button class="button" type="submit">➕ Add New Fungi to Database</button>
-    </form>
-
-    <!-- Result -->
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <p style="color: red; font-weight: bold;">{{ messages[0] }}</p>
-        {% endif %}
-    {% endwith %}
-
-    {% if match_name %}
-        <h2 style="color: green;">✅ Match: {{ match_name }} (Score: {{ match_score }})</h2>
+  <!-- Flash message -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p class="error">{{ messages[0] }}</p>
     {% endif %}
+  {% endwith %}
 
-    <div class="container">
-        <div class="frame">
-            {% if user_image %}
-                <img src="{{ user_image }}" width="300"><br>
-                <p>Your Image</p>
-            {% endif %}
-        </div>
-
-        <div class="frame">
-            {% if match_image %}
-                <img src="{{ match_image }}" width="300"><br>
-                <p>{{ match_name }}</p>
-            {% endif %}
-        </div>
+  <!-- Upload Image -->
+  <form method="POST" action="/identify" enctype="multipart/form-data" id="uploadForm">
+    <div class="upload-btn-wrapper">
+      <button class="btn">📁 Upload Image</button>
+      <input type="file" name="image" accept="image/*" onchange="document.getElementById('uploadForm').submit()">
     </div>
+  </form>
 
-    {% if description %}
-        <div class="desc-box">
-            {{ description }}
-        </div>
-    {% endif %}
+  <!-- Take Photo -->
+  <button class="btn" onclick="toggleCamera()">📸 Take Photo</button>
+  <br>
+  <video id="video" width="300" height="225" autoplay style="display: none;"></video>
+  <canvas id="canvas" width="300" height="225" style="display: none;"></canvas>
 
-    <script>
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const snap = document.getElementById('snap');
-        const hiddenFile = document.getElementById('hiddenFile');
-        const cameraForm = document.getElementById('cameraForm');
+  <form id="cameraForm" method="POST" action="/identify" enctype="multipart/form-data" style="display:none;">
+    <input type="file" id="hiddenFile" name="image">
+  </form>
 
-        // Start camera stream
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const hiddenFile = document.getElementById('hiddenFile');
+    const cameraForm = document.getElementById('cameraForm');
+
+    function toggleCamera() {
+      if (video.style.display === "none") {
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-            })
-            .catch(err => {
-                alert("Webcam access denied or unavailable.");
-            });
+          .then(stream => {
+            video.srcObject = stream;
+            video.style.display = "block";
+            setTimeout(() => {
+              takePhoto();
+            }, 2000);  // Auto-capture after 2 seconds (or you can add a "Capture" button instead)
+          })
+          .catch(err => {
+            alert("Cannot access webcam.");
+          });
+      }
+    }
 
-        // Take photo
-        snap.addEventListener("click", function () {
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            canvas.toBlob(blob => {
-                const file = new File([blob], "captured.jpg", { type: "image/jpeg" });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                hiddenFile.files = dataTransfer.files;
-                cameraForm.submit();
-            }, 'image/jpeg');
-        });
-    </script>
+    function takePhoto() {
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      video.srcObject.getTracks().forEach(track => track.stop());
+      canvas.toBlob(blob => {
+        const file = new File([blob], "captured.jpg", { type: "image/jpeg" });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        hiddenFile.files = dataTransfer.files;
+        cameraForm.submit();
+      }, 'image/jpeg');
+    }
+  </script>
 
 </body>
 </html>
+
 
