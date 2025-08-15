@@ -2,26 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Identification Result</title>
+  <title>Result - Fungi Match</title>
+  <style>
+    body {
+      background-color: #e0f7fa;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    h1 {
+      color: #00695c;
+      padding: 20px;
+      font-size: 32px;
+    }
+
+    h2 {
+      color: green;
+      margin-top: 20px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 40px 0;
+      flex-wrap: wrap;
+    }
+
+    .frame {
+      background-color: #e0f7fa;
+      border: 2px dashed #00695c;
+      width: 300px;
+      min-height: 300px;
+      padding: 10px;
+    }
+
+    .desc-box {
+      width: 90%;
+      margin: 30px auto;
+      background-color: #ffffff;
+      border: 2px solid #004d40;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+      color: #004d40;
+      font-size: 14px;
+      height: 180px;
+      overflow-y: auto;
+    }
+
+    .btn {
+      background-color: #004d40;
+      color: black;
+      font-size: 16px;
+      border: 3px solid #004d40;
+      border-radius: 5px;
+      padding: 12px 24px;
+      cursor: pointer;
+      font-family: 'Comic Sans MS', cursive;
+      margin-top: 10px;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>🔍 Identification Result</h1>
 
-  <h2>Uploaded Image</h2>
-  <img src="{{ url_for('uploaded_file', filename=uploaded_image) }}" width="300" alt="Uploaded Image">
+  <h1>Fungi Identification Result</h1>
 
-  {% if result.matched %}
-    <h2>✅ Match Found: {{ result.match_name }}</h2>
-    <p><strong>Score:</strong> {{ result.score }}</p>
-    <img src="{{ url_for('db_file', filename=result.match_image) }}" width="300" alt="Matched Fungi Image">
-    <p><strong>Description:</strong></p>
-    <p>{{ result.description }}</p>
-  {% else %}
-    <h2>❌ No match found</h2>
-    <p>Try uploading a clearer image or add this fungi to the database.</p>
-  {% endif %}
+  <h2>✅ Match: {{ match_name }} (Score: {{ match_score }})</h2>
 
-  <br><br>
-  <a href="{{ url_for('index') }}">🔙 Go Back</a>
+  <div class="container">
+    <div class="frame">
+      <img src="{{ user_image }}" width="300">
+      <p>Your Image</p>
+    </div>
+    <div class="frame">
+      <img src="{{ match_image }}" width="300">
+      <p>{{ match_name }}</p>
+    </div>
+  </div>
+
+  <div class="desc-box">
+    {{ description }}
+  </div>
+
+  <a href="/" class="btn">🔙 Back</a>
+
 </body>
 </html>
+
